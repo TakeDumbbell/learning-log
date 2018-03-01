@@ -132,22 +132,27 @@ BOOTSTRAP3 = {
     'include_jquery': True,
 }
 
-#Heroku设置
+# Heroku settings
 cwd = os.getcwd()
+print("--- CWD ---\n", cwd, "\n---\n")
 if cwd == '/app' or cwd[:4] == '/tmp':
     import dj_database_url
     DATABASES = {
-        'default' : dj_database_url.config(default='postgres://localhost')
+        'default': dj_database_url.config(default='postgres://localhost')
     }
-    #让request.is_secure()承认X-Forwarded-Proto头
-    SECURE_PROXY_HEADER = ('HTTP_X_FORWARDED_PROTO','https')
-
-    #支持所有的主机头(host header)
+    
+    # Honor the 'X-Forwarded-Proto' header for request.is_secure().
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    
+    # Only allow heroku to host the project.
     ALLOWED_HOSTS = ['*']
+    DEBUG = True
 
-    #静态资产配置
-    BASE_DIR = os.path.dirname(os.path.abspath(_file_))
+    # Static asset configuration
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     STATIC_ROOT = 'staticfiles'
     STATICFILES_DIRS = (
-        os.path.join(BASE_DIR,'static'),
+        os.path.join(BASE_DIR, 'static'),
     )
+
+    STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
